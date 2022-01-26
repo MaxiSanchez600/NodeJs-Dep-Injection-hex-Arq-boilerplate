@@ -10,6 +10,10 @@ import { Sequelize } from "sequelize-typescript";
 // };
 
 let databaseClient: Sequelize;
+
+const setDatabase = (db: Sequelize) => {
+  databaseClient = db;
+};
 // const connectDatabase = () => {
 //   console.log("DB_USER ", process.env.DB_USER);
 //   console.log("DB_PASS ", process.env.DB_PASS);
@@ -34,6 +38,8 @@ function getFeeders(): serviceCommonResponse {
     status: 200,
     error: null,
   };
+  const nose = databaseClient.models;
+  console.log("LOS MODELS DE LA BD SON: ", nose);
   return response;
 }
-export { getFeeders };
+export { getFeeders, setDatabase };

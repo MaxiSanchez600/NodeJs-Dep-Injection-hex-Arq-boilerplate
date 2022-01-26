@@ -3,10 +3,14 @@ import * as Controller from "../controller/controller";
 import * as Service from "../service/service";
 import * as Adapter from "../adapter/adapter";
 import * as http from "http";
+import { Sequelize } from "sequelize-typescript";
 
-export default function newRouterContainer(): http.Server {
+export default function newRouterContainer(
+  databaseClient: Sequelize
+): http.Server {
   // Creating the Adapter with the BD Injected
   var newAdapter = Adapter;
+  newAdapter.setDatabase(databaseClient);
 
   // Creating the Service with the Adapter Injected
   var newService = Service;
