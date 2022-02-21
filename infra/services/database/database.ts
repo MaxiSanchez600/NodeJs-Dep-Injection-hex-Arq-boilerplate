@@ -11,13 +11,17 @@ function connectDatabase() {
   console.log("DB_PASS ", process.env.DB_PASS);
   console.log("DB_HOST ", process.env.DB_HOST);
   console.log("DB_NAME ", process.env.DB_NAME);
-  const sequelize = new Sequelize(
-    `postgres://${process.env.DB_USER}:${process.env.DB_PASS}@${process.env.DB_HOST}/${process.env.DB_NAME}`,
-    {
-      logging: false, // set to console.log to see the raw SQL queries
-      native: false, // lets Sequelize know we can use pg-native for ~30% more speed
-    }
-  );
+  console.log("DATABASE_URL", process.env.DATABASE_URL);
+
+  // Creating the DB Address
+  const dbaddress = process.env.DATABASE_URL
+    ? process.env.DATABASE_URL
+    : `postgres://${process.env.DB_USER}:${process.env.DB_PASS}@${process.env.DB_HOST}/${process.env.DB_NAME}`;
+
+  const sequelize = new Sequelize(dbaddress, {
+    logging: false, // set to console.log to see the raw SQL queries
+    native: false, // lets Sequelize know we can use pg-native for ~30% more speed
+  });
   // Loading the models to the DB
   Models.default(sequelize);
 
