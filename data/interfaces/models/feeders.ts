@@ -1,0 +1,27 @@
+import { Model } from "sequelize-typescript";
+import FeedersReport from "./feedersReport";
+
+export interface FeederInstance extends Model<Feeders> {
+  [x: string]: any;
+}
+
+export interface Feeders {
+  location: string;
+  latitude: string;
+  longitude: string;
+  isOn: boolean;
+  description: string;
+  FeederReportId: number;
+}
+
+export interface FeedersWithReport {
+  id: number;
+  qrId: string;
+  location: string;
+  latitude: string;
+  longitude: string;
+  isOn: boolean;
+  description: string;
+  FeederReportId: number;
+  FeederReport: FeedersReport;
+}

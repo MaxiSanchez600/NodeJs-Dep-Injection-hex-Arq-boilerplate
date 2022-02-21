@@ -1,0 +1,8 @@
+export enum Status {
+  FOOD_MISSING = "FOOD_MISSING",
+  WATER_MISSING = "WATER_MISSING",
+  NO_MISSING = "NO_MISSING",
+  FW_MISSING = "FW_MISSING",
+  OK = "OK",
+  NO_OK = "NO_OK",
+}

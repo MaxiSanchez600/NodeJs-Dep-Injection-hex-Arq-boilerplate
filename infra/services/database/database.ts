@@ -1,4 +1,5 @@
 import { Sequelize } from "sequelize-typescript";
+import * as Models from "./models";
 require("dotenv").config();
 
 let databaseClient: Sequelize;
@@ -17,7 +18,16 @@ function connectDatabase() {
       native: false, // lets Sequelize know we can use pg-native for ~30% more speed
     }
   );
-  console.log("SEQUELIZE CLIENT: ", sequelize);
+  // Loading the models to the DB
+  Models.default(sequelize);
+
+  // Setting the relations between models
+  const { Feeders, FeederReport } = sequelize.models;
+
+  // Feeders and reports One to One
+  FeederReport.hasOne(Feeders);
+  Feeders.belongsTo(FeederReport);
+
   databaseClient = sequelize;
   databaseClient.sync({ force: false });
 }

@@ -1,45 +1,91 @@
-import { serviceCommonResponse } from "../types/response";
-//const { Sequelize } = require("sequelize");
+// @ts-nocheck
+
+import { serviceCommonResponse } from "../../data/types/response";
+import {
+  Feeders,
+  FeedersWithReport,
+} from "../../data/interfaces/models/feeders";
 require("dotenv").config();
-import { Sequelize } from "sequelize-typescript";
-
-// let feedersAdapter: AdapterInterface;
-
-// const setAdapter = (adapter: AdapterInterface) => {
-//   feedersAdapter = adapter;
-// };
+import { Sequelize, Model } from "sequelize-typescript";
+import { Errors } from "../../data/enums/errors";
+import { UpdateFeedersInformation } from "../../data/interfaces/requests/updateFeederInformation";
+import FeedersReport from "../../data/interfaces/models/feedersReport";
 
 let databaseClient: Sequelize;
 
 const setDatabase = (db: Sequelize) => {
   databaseClient = db;
 };
-// const connectDatabase = () => {
-//   console.log("DB_USER ", process.env.DB_USER);
-//   console.log("DB_PASS ", process.env.DB_PASS);
-//   console.log("DB_HOST ", process.env.DB_HOST);
-//   console.log("DB_NAME ", process.env.DB_NAME);
-//   const sequelize = new Sequelize(
-//     `postgres://${process.env.DB_USER}:${process.env.DB_PASS}@${process.env.DB_HOST}/${process.env.DB_NAME}`,
-//     {
-//       logging: false, // set to console.log to see the raw SQL queries
-//       native: false, // lets Sequelize know we can use pg-native for ~30% more speed
-//     }
-//   );
-//   console.log("SEQUELIZE CLIENT: ", databaseClient);
-//   databaseClient = sequelize;
-// };
 
-function getFeeders(): serviceCommonResponse {
-  let response: serviceCommonResponse = {
-    data: {
-      adapter: "Llegue al adapter!",
-    },
-    status: 200,
-    error: null,
-  };
-  const nose = databaseClient.models;
-  console.log("LOS MODELS DE LA BD SON: ", nose);
+const isFeeder = async (id: string): Promise<FeedersWithReport> => {
+  const { Feeders, FeederReport } = databaseClient.models;
+  const response = await Feeders.findOne({
+    where: { qrId: id },
+    include: [
+      {
+        model: FeederReport,
+        required: true,
+      },
+    ],
+  });
   return response;
-}
-export { getFeeders, setDatabase };
+};
+
+const getFeeders = async (): Promise<FeedersWithReport[]> => {
+  const { Feeders, FeederReport } = databaseClient.models;
+  const response = await Feeders.findAll({
+    include: [
+      {
+        model: FeederReport,
+        required: true,
+      },
+    ],
+  });
+  return response;
+};
+
+const updateFeederInformation = async (
+  info: UpdateFeedersInformation
+): Promise<FeedersWithReport> => {
+  // Update informacion del Feeder
+  const { Feeders, FeederReport } = databaseClient.models;
+  const response = await Feeders.findOne({
+    where: { qrId: info.qrId },
+    include: [
+      {
+        model: FeederReport,
+        required: true,
+      },
+    ],
+  });
+  if (response) {
+    response.location = info.location;
+    response.latitude = info.latitude;
+    response.longitude = info.longitude;
+    response.isOn = true;
+    response.description = info.description;
+    await response.save();
+  }
+  return response;
+};
+
+const updateFeederReport = async (
+  info: FeedersReport
+): Promise<FeedersReport> => {
+  // Update informacion del Report
+  const { FeederReport } = databaseClient.models;
+  const response = await FeederReport.findOne({ where: { id: info.id } });
+  if (response) {
+    response.description = info.description;
+    response.status = info.status;
+    await response.save();
+  }
+  return response;
+};
+export {
+  getFeeders,
+  setDatabase,
+  isFeeder,
+  updateFeederInformation,
+  updateFeederReport,
+};

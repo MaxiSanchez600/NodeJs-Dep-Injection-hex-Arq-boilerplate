@@ -1,6 +1,6 @@
 import { Errors } from "../enums/errors";
 export type serviceCommonResponse = {
-  data: {};
+  data: any | null;
   error: Errors | null;
   status: number;
 };

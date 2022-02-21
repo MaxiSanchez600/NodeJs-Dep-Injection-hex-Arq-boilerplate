@@ -9,18 +9,18 @@ export default function newRouterContainer(
   databaseClient: Sequelize
 ): http.Server {
   // Creating the Adapter with the BD Injected
-  var newAdapter = Adapter;
+  let newAdapter = Adapter;
   newAdapter.setDatabase(databaseClient);
 
   // Creating the Service with the Adapter Injected
-  var newService = Service;
-  newService.setAdapter(Adapter);
+  let newService = Service;
+  newService.setAdapter(newAdapter);
 
   // Creating the Controller with the Service Injected
-  var newController = Controller;
+  let newController = Controller;
   newController.setService(newService);
 
   // Creating the Router with the Controller Injected
-  var appRouter = newAppRouter(newController);
+  let appRouter = newAppRouter(newController);
   return appRouter;
 }
