@@ -21,6 +21,13 @@ function connectDatabase() {
   const sequelize = new Sequelize(dbaddress, {
     logging: false, // set to console.log to see the raw SQL queries
     native: false, // lets Sequelize know we can use pg-native for ~30% more speed
+    dialect: "postgres",
+    dialectOptions: {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false,
+      },
+    },
   });
   // Loading the models to the DB
   Models.default(sequelize);
