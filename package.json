@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "ts-node main.ts"
+    "start": "ts-node main.ts",
+    "build": "rimraf build && tsc -p tsconfig.json",
+    "pm2": "NODE_ENV=production pm2 start build/server.js --watch -i max"
   },
   "author": "",
   "license": "ISC",
