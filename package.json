@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "startjs": "start main.js --watch -i max",
-    "start": "ts-node main.ts",
+    "start": "npm install -g ts-node && ts-node main.ts",
     "build": "npm install rimraf -g && rimraf build && tsc -p tsconfig.json",
     "pm2": "NODE_ENV=production pm2 start build/server.js --watch -i max"
   },
