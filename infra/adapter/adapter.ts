@@ -49,6 +49,16 @@ const updateFeederInformation = async (
   info: UpdateFeedersInformation
 ): Promise<FeedersWithReport> => {
   // Update informacion del Feeder
+
+  console.log("Pedido para agregar un nuevo bebedero con ID: ", info.qrId);
+  console.log(
+    "Nueva Desc: ",
+    info.description,
+    "Nueva Location",
+    info.location,
+    "Nueva Imagen: ",
+    info.FeederReport.img
+  );
   const { Feeders, FeederReport } = databaseClient.models;
   const feeder = await Feeders.findOne({
     where: { qrId: info.qrId },
@@ -85,9 +95,25 @@ const updateFeederReport = async (
   info: FeedersReport
 ): Promise<FeedersReport> => {
   // Update informacion del Report
+
+  //Logging
+  console.log("Pedido para actualizar el estado del comedero: ", info.id);
   const { FeederReport } = databaseClient.models;
   const response = await FeederReport.findOne({ where: { id: info.id } });
   if (response) {
+    console.log(
+      "Estado anterior: ",
+      info.status,
+      "Estado reportado: ",
+      response.status
+    );
+    console.log(
+      "Descripcion anterior: ",
+      info.description,
+      "Descripcion nueva: ",
+      response.description
+    );
+    console.log("Foto anterior: ", info.img, "Foto nueva: ", response.img);
     response.description = info.description;
     response.status = info.status;
     await response.save();
