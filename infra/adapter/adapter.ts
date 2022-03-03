@@ -34,6 +34,7 @@ const isFeeder = async (id: string): Promise<FeedersWithReport> => {
 const getFeeders = async (): Promise<FeedersWithReport[]> => {
   const { Feeders, FeederReport } = databaseClient.models;
   const response = await Feeders.findAll({
+    where: { isOn: true },
     include: [
       {
         model: FeederReport,
@@ -49,7 +50,7 @@ const updateFeederInformation = async (
 ): Promise<FeedersWithReport> => {
   // Update informacion del Feeder
   const { Feeders, FeederReport } = databaseClient.models;
-  const response = await Feeders.findOne({
+  const feeder = await Feeders.findOne({
     where: { qrId: info.qrId },
     include: [
       {
@@ -58,15 +59,26 @@ const updateFeederInformation = async (
       },
     ],
   });
-  if (response) {
-    response.location = info.location;
-    response.latitude = info.latitude;
-    response.longitude = info.longitude;
-    response.isOn = true;
-    response.description = info.description;
-    await response.save();
+  if (feeder) {
+    feeder.location = info.location;
+    feeder.latitude = info.latitude;
+    feeder.longitude = info.longitude;
+    feeder.isOn = true;
+    feeder.description = info.description;
+    await feeder.save();
   }
-  return response;
+
+  // Actualizando el estado
+  const feederReport = await FeederReport.findOne({
+    where: { id: info.FeederReportId },
+  });
+  if (feederReport) {
+    feederReport.img = info.FeederReport.img;
+    feederReport.description = info.FeederReport.description;
+    await feederReport.save();
+  }
+
+  return feederReport;
 };
 
 const updateFeederReport = async (

@@ -64,7 +64,7 @@ async function updateFeederInformation(req, res, next) {
   let serviceResponse: serviceCommonResponse;
   let bodyRequest: UpdateFeedersInformation;
 
-  bodyRequest = req.body;
+  bodyRequest = req.body.data;
 
   // Checking for Service dependency
   if (serviceController === null) {

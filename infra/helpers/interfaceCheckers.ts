@@ -17,7 +17,7 @@ export function isUpdateFeedersInformation(
     arg.FeederReportId &&
     typeof arg.description == "string" &&
     arg.description &&
-    typeof arg.FeederReportId == "string" &&
+    typeof arg.FeederReportId == "number" &&
     arg.FeederReport.description &&
     typeof arg.FeederReport.description == "string" &&
     arg.FeederReport.status &&
