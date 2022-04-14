@@ -28,6 +28,7 @@ const isFeeder = async (id: string): Promise<FeedersWithReport> => {
       },
     ],
   });
+  console.log("Se scaneo el QR: ", id, " Ubicado en ", response.location);
   return response;
 };
 
