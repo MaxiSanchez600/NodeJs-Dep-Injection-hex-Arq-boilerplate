@@ -2,6 +2,7 @@ import AdapterInterface from "../adapter/adapter.interface";
 import { serviceCommonResponse } from "../../data/types/response";
 import { UpdateFeedersInformation } from "../../data/interfaces/requests/updateFeederInformation";
 import FeedersReport from "../../data/interfaces/models/feedersReport";
+import { UpdateEmailBody } from "../../data/interfaces/requests/updateEmail";
 
 export default interface ServiceInterface {
   setAdapter: (adapter: AdapterInterface) => void;
@@ -15,4 +16,5 @@ export default interface ServiceInterface {
     next,
     body: FeedersReport
   ) => Promise<serviceCommonResponse>;
+  updateEmail: (next, body: UpdateEmailBody) => Promise<serviceCommonResponse>;
 }

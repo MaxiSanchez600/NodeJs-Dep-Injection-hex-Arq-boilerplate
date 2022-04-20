@@ -10,6 +10,9 @@ import { Sequelize, Model } from "sequelize-typescript";
 import { Errors } from "../../data/enums/errors";
 import { UpdateFeedersInformation } from "../../data/interfaces/requests/updateFeederInformation";
 import FeedersReport from "../../data/interfaces/models/feedersReport";
+import { UpdateEmailBody } from "../../data/interfaces/requests/updateEmail";
+import { getMessage, getStatus } from "../helpers/createEmail";
+const nodemailer = require("nodemailer");
 
 let databaseClient: Sequelize;
 
@@ -104,22 +107,113 @@ const updateFeederReport = async (
   if (response) {
     console.log(
       "Estado anterior: ",
-      info.status,
+      response.status,
       "Estado reportado: ",
-      response.status
+      info.status
     );
     console.log(
       "Descripcion anterior: ",
-      info.description,
+      response.description,
       "Descripcion nueva: ",
-      response.description
+      info.description
     );
-    console.log("Foto anterior: ", info.img, "Foto nueva: ", response.img);
     response.description = info.description;
     response.status = info.status;
     await response.save();
   }
+
+  // Send Emails for Feeder update
+  // Should be using Repos (Repo for Feeder, Repo for Emails, and call all of them from Service) and not Adapter Metodology
+  // NodeMailer should be injected
+
+  sendEmails(info.id, response);
+
   return response;
+};
+
+const updateEmail = async (info: UpdateEmailBody): Promise<any> => {
+  // Update informacion del Email
+
+  //Logging
+  console.log(
+    "Pedido para agregar ids al email: ",
+    info.email,
+    ", el siguiente listado de IDS: ",
+    info.ids
+  );
+  const { EmailFeeder, Email } = databaseClient.models;
+
+  const [email, created] = await Email.findOrCreate({
+    where: { email: info.email },
+    raw: true,
+  });
+
+  if (email) {
+    await info.ids.map(async (id) => {
+      await EmailFeeder.findOrCreate({
+        where: { FeederId: id, EmailId: email.id },
+      });
+    });
+    console.log("IDS Agregados con exito");
+  }
+
+  return email;
+};
+
+const sendEmails = async (id: string, report: any) => {
+  const { Email, Feeders } = databaseClient.models;
+
+  const Feeder = await Feeders.findOne({
+    where: { FeederReportId: id },
+    raw: true,
+  });
+
+  const message = `¡Hola! Te enviamos el nuevo estado de este comedero, ya que te suscribiste a sus actualizaciones.\nUbicacion: ${
+    Feeder.location
+  }\nDescription: ${Feeder.description}\nEstado actual: ${getStatus(
+    report.status
+  )}\n\n¡Si esta vacio, o tiene algun problema, podes acercarte a solucionarlo o rellenarlo, pero no te olvides de actualizar el estado!\n\nGracias,\nPor Ellos`;
+
+  const emailFeedersData = await Email.findAll({
+    include: [
+      {
+        model: Feeders,
+        required: true,
+        where: { id: Feeder.id },
+        through: { attributes: [] },
+      },
+    ],
+    raw: true,
+  });
+
+  const user = process.env.EMAIL_USER;
+  const password = process.env.EMAIL_PASS;
+
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: user,
+      pass: password,
+    },
+  });
+
+  emailFeedersData.map((emailFeederData) => {
+    const mailOptions = {
+      from: "porelloscomederos@gmail.com",
+      to: emailFeederData.email,
+      subject: `El comedero ubicado en: ${Feeder.location}${
+        " " + getMessage(report.status)
+      }`,
+      text: message,
+    };
+    transporter.sendMail(mailOptions, function (error, info) {
+      if (error) {
+        console.log("Error enviando email: ", error);
+      } else {
+        console.log("Email sent: " + info.response);
+      }
+    });
+  });
 };
 export {
   getFeeders,
@@ -127,4 +221,5 @@ export {
   isFeeder,
   updateFeederInformation,
   updateFeederReport,
+  updateEmail,
 };

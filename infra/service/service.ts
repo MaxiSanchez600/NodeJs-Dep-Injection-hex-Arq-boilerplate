@@ -4,6 +4,7 @@ import { serviceCommonResponse } from "../../data/types/response";
 import { UpdateFeedersInformation } from "../../data/interfaces/requests/updateFeederInformation";
 import { report } from "process";
 import FeedersReport from "../../data/interfaces/models/feedersReport";
+import { UpdateEmailBody } from "../../data/interfaces/requests/updateEmail";
 
 let feedersAdapter: AdapterInterface;
 
@@ -106,10 +107,36 @@ async function updateFeederReport(
     return;
   }
 }
+
+async function updateEmail(
+  next,
+  body: UpdateEmailBody
+): Promise<serviceCommonResponse> {
+  // Checking for Adapter dependency
+  if (feedersAdapter === null) {
+    next(Errors.INTERNAL_SERVICE_ERROR);
+    return;
+  }
+  try {
+    const reportResponse = await feedersAdapter.updateEmail(body);
+    return {
+      data: reportResponse,
+      status: 200,
+      error: null,
+    };
+  } catch (e) {
+    next({
+      err: Errors.INTERNAL_SERVICE_ERROR,
+      dataErr: e,
+    });
+    return;
+  }
+}
 export {
   getFeeders,
   setAdapter,
   isFeeder,
   updateFeederInformation,
   updateFeederReport,
+  updateEmail,
 };

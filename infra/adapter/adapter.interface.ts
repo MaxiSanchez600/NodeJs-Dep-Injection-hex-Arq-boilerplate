@@ -4,6 +4,7 @@ import {
   Feeders,
 } from "../../data/interfaces/models/feeders";
 import FeedersReport from "../../data/interfaces/models/feedersReport";
+import { UpdateEmailBody } from "../../data/interfaces/requests/updateEmail";
 import { UpdateFeedersInformation } from "../../data/interfaces/requests/updateFeederInformation";
 
 export default interface AdapterInterface {
@@ -13,4 +14,5 @@ export default interface AdapterInterface {
     info: UpdateFeedersInformation
   ) => Promise<FeedersWithReport>;
   updateFeederReport: (info: FeedersReport) => Promise<FeedersReport>;
+  updateEmail: (info: UpdateEmailBody) => Promise<any>;
 }

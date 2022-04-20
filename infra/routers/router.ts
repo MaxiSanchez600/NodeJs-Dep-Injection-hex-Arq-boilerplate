@@ -32,6 +32,7 @@ export default function newAppRouter(
   app.get("/api/beta/v1/feederbyid", Controller.isFeeder);
   app.post("/api/beta/v1/update/feeder", Controller.updateFeederInformation);
   app.post("/api/beta/v1/update/report", Controller.updateFeederReport);
+  app.put("/api/beta/v1/update/email", Controller.updateEmail);
   app.use(errorHandler);
   return app;
 }

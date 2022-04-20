@@ -6,4 +6,5 @@ export default interface ControllerInterface {
   getFeeders: (res, req, next) => void;
   updateFeederInformation: (res, req, next) => void;
   updateFeederReport: (res, req, next) => void;
+  updateEmail: (res, req, next) => void;
 }

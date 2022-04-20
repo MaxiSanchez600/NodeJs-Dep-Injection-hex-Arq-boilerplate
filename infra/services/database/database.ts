@@ -33,11 +33,15 @@ function connectDatabase() {
   Models.default(sequelize);
 
   // Setting the relations between models
-  const { Feeders, FeederReport } = sequelize.models;
+  const { Feeders, FeederReport, Email, EmailFeeder } = sequelize.models;
 
   // Feeders and reports One to One
   FeederReport.hasOne(Feeders);
   Feeders.belongsTo(FeederReport);
+
+  // Feeders and Email many to many
+  Feeders.belongsToMany(Email, { through: EmailFeeder });
+  Email.belongsToMany(Feeders, { through: EmailFeeder });
 
   databaseClient = sequelize;
   databaseClient.sync({ force: false });

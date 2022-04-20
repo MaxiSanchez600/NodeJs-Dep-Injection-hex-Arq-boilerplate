@@ -53,4 +53,11 @@ export default (sequelize) => {
       unique: true,
     },
   });
+  sequelize.define("Email", {
+    email: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+  });
+  sequelize.define("EmailFeeder", {});
 };

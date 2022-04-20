@@ -1,4 +1,5 @@
 import FeedersReport from "../../data/interfaces/models/feedersReport";
+import { UpdateEmailBody } from "../../data/interfaces/requests/updateEmail";
 import { UpdateFeedersInformation } from "../../data/interfaces/requests/updateFeederInformation";
 
 export function isUpdateFeedersInformation(
@@ -38,5 +39,16 @@ export function isUpdateReport(arg: any): arg is FeedersReport {
     typeof arg.status == "string" &&
     arg.id &&
     typeof arg.id == "number"
+  );
+}
+
+export function isUpdateEmail(arg: any): arg is UpdateEmailBody {
+  console.log(arg);
+  return (
+    arg &&
+    arg.email &&
+    typeof arg.email == "string" &&
+    arg.ids &&
+    Array.isArray(arg.ids)
   );
 }
