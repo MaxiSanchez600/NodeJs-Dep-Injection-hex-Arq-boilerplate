@@ -9,6 +9,7 @@ export interface Feeders {
   location: string;
   latitude: string;
   longitude: string;
+  qrId?: string;
   isOn: boolean;
   description: string;
   FeederReportId: number;
@@ -25,3 +26,13 @@ export interface FeedersWithReport {
   FeederReportId: number;
   FeederReport: FeedersReport;
 }
+
+export const baseFeeder: Feeders = {
+  location: "loc",
+  latitude: "lat",
+  longitude: "long",
+  isOn: false,
+  description: "desc",
+  FeederReportId: 1,
+  qrId: "1",
+};

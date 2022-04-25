@@ -4,6 +4,7 @@ import { serviceCommonResponse } from "../../data/types/response";
 import { UpdateFeedersInformation } from "../../data/interfaces/requests/updateFeederInformation";
 import FeedersReport from "../../data/interfaces/models/feedersReport";
 import {
+  isCreateFeeder,
   isUpdateEmail,
   isUpdateFeedersInformation,
   isUpdateReport,
@@ -101,8 +102,6 @@ async function updateFeederReport(req, res, next) {
 
   bodyRequest = req.body.data;
 
-  console.log("LA BODY ES: ", bodyRequest);
-
   // Checking for Service dependency
   if (serviceController === null) {
     next({
@@ -130,6 +129,35 @@ async function updateFeederReport(req, res, next) {
   serviceResponse && res.status(serviceResponse.status).send(serviceResponse);
 }
 
+async function createFeeder(req, res, next) {
+  let serviceResponse: serviceCommonResponse;
+  let bodyRequest: string;
+
+  bodyRequest = req.body.data;
+
+  // Checking for Service dependency
+  if (serviceController === null) {
+    next({
+      err: Errors.INTERNAL_SERVICE_ERROR,
+      dataErr: "Service dependency missing, try again later.",
+    });
+    return;
+  }
+
+  // Checking for correct req body
+  if (!isCreateFeeder(bodyRequest)) {
+    next({
+      err: Errors.BODY_ERROR,
+      dataErr: "Body is missing or bad formatted in the request",
+    });
+    return;
+  }
+
+  serviceResponse = await serviceController.createFeeder(next, bodyRequest);
+
+  // Checking for Response
+  serviceResponse && res.status(serviceResponse.status).send(serviceResponse);
+}
 async function updateEmail(req, res, next) {
   let serviceResponse: serviceCommonResponse;
   let bodyRequest: UpdateEmailBody;
@@ -167,4 +195,5 @@ export {
   updateFeederInformation,
   updateFeederReport,
   updateEmail,
+  createFeeder,
 };

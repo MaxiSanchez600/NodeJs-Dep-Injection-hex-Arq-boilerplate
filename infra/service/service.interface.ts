@@ -16,5 +16,6 @@ export default interface ServiceInterface {
     next,
     body: FeedersReport
   ) => Promise<serviceCommonResponse>;
+  createFeeder: (next, email: string) => Promise<serviceCommonResponse>;
   updateEmail: (next, body: UpdateEmailBody) => Promise<serviceCommonResponse>;
 }

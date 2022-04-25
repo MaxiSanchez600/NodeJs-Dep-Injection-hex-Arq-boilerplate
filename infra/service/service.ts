@@ -6,6 +6,13 @@ import { report } from "process";
 import FeedersReport from "../../data/interfaces/models/feedersReport";
 import { UpdateEmailBody } from "../../data/interfaces/requests/updateEmail";
 
+// Old require not updated for ES6
+const fs = require("fs");
+const pdf = require("html-pdf");
+
+// Get the HTML Base File
+const html = fs.readFileSync("./base.html", "utf8");
+
 let feedersAdapter: AdapterInterface;
 
 const setAdapter = (adapter: AdapterInterface) => {
@@ -108,6 +115,56 @@ async function updateFeederReport(
   }
 }
 
+async function createFeeder(
+  next,
+  email: string
+): Promise<serviceCommonResponse> {
+  // Checking for Adapter dependency
+  if (feedersAdapter === null) {
+    next(Errors.INTERNAL_SERVICE_ERROR);
+    return;
+  }
+  try {
+    // Create the Feeder Report
+    const feederReportResponse = await feedersAdapter.createFeederReport();
+
+    // Create the new Feeder
+    const feederResponse = await feedersAdapter.createFeeder(
+      feederReportResponse
+    );
+
+    // Generate the new feeder QR with it the ID
+    const generatedQR = await feedersAdapter.generateQR(feederResponse.qrId);
+
+    // Create the PDF to send
+    const response = await pdf
+      .create(html)
+      .toFile(`./porellosqr.pdf`, function (err, stream) {
+        if (err) {
+          next({
+            err: Errors.INTERNAL_SERVICE_ERROR,
+            dataErr: err,
+          });
+        } else {
+          console.log("PDF CREADO CON EXITO");
+        }
+      });
+
+    // Return if no errors
+    return {
+      data: feederResponse,
+      status: 200,
+      error: null,
+    };
+  } catch (e) {
+    next({
+      err: Errors.INTERNAL_SERVICE_ERROR,
+      dataErr: e,
+    });
+    return;
+  }
+}
+
 async function updateEmail(
   next,
   body: UpdateEmailBody
@@ -139,4 +196,5 @@ export {
   updateFeederInformation,
   updateFeederReport,
   updateEmail,
+  createFeeder,
 };
