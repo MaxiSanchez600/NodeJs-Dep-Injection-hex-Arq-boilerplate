@@ -6,12 +6,35 @@
       /**
  *     Change the basic background color of the page
  */
-      html {
-        background-color: blue;
-        position: relative;
-        min-width: 3508px;
-        min-height: 4961px;
-        height: 100%;
+      img {
+        display: block;
+        margin-right: auto;
+        margin-left: auto;
+        width: 83%;
+      }
+
+      .div_container {
+        margin: 0 auto;
+        margin-top: 1em;
+        background-color: #423e28;
+        width: 300px;
+        height: 300px;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .image_container {
+        margin-top: 3em;
+        border-radius: 1em;
+        justify-content: center;
+      }
+
+      label {
+        margin-left: 2.7em;
+        color: white;
+        font-size: 1.2em;
+        font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+          "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
       }
 
       /**
@@ -31,6 +54,10 @@
     </style>
   </head>
   <body>
-    some text
+    <img src="https://i.ibb.co/2h5QyZb/info.png" alt="info" />
+    <div class="div_container">
+      <img class="image_container" src="" alt="qr" />
+      <label>@porelloscomederos</label>
+    </div>
   </body>
 </html>

@@ -53,8 +53,7 @@ export function isUpdateEmail(arg: any): arg is UpdateEmailBody {
   );
 }
 
-export function isCreateFeeder(arg: any): arg is string {
-  const emailRegex =
-    /^[a-zA-Z0-9.! #$%&'*+/=? ^_`{|}~-]+@[a-zA-Z0-9-]+(?:\. [a-zA-Z0-9-]+)*$/;
-  return arg && typeof arg == "string" && emailRegex.test(arg);
+export function isCreateFeeder(arg: any): arg is { email } {
+  const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
+  return arg && typeof arg.email == "string" && emailRegex.test(arg.email);
 }

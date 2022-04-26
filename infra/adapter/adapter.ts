@@ -1,29 +1,20 @@
 // @ts-nocheck
 
-import { serviceCommonResponse } from "../../data/types/response";
 import {
-  Feeders,
   FeedersWithReport,
   baseFeeder,
 } from "../../data/interfaces/models/feeders";
-require("dotenv").config();
-import { Sequelize, Model } from "sequelize-typescript";
-import { Errors } from "../../data/enums/errors";
+import { Sequelize } from "sequelize-typescript";
 import { UpdateFeedersInformation } from "../../data/interfaces/requests/updateFeederInformation";
 import FeedersReport from "../../data/interfaces/models/feedersReport";
 import { UpdateEmailBody } from "../../data/interfaces/requests/updateEmail";
 import { getMessage, getStatus } from "../helpers/createEmail";
 import { Status } from "../../data/enums/status";
 import { v4 as uuidv4 } from "uuid";
-import QRCode from "qrcode";
 
 // Old require not updated for ES6
-const fs = require("fs");
-const pdf = require("html-pdf");
+const QRCode = require("qrcode");
 const nodemailer = require("nodemailer");
-
-// Get the HTML Base File
-const html = fs.readFileSync("./base.html", "utf8");
 
 let databaseClient: Sequelize;
 
@@ -107,14 +98,10 @@ const updateFeederInformation = async (
 };
 
 const createFeederReport = async (): Promise<FeedersReport> => {
-  console.log("Pedido para actualizar el estado del comedero: ", info.id);
-
   const { FeederReport } = databaseClient.models;
 
   const fReport = await FeederReport.create({
-    description: "desc",
     status: Status.OK,
-    img: "img",
   });
 
   return fReport;
@@ -123,8 +110,6 @@ const createFeederReport = async (): Promise<FeedersReport> => {
 const createFeeder = async (
   info: FeedersReport
 ): Promise<FeedersWithReport> => {
-  console.log("Pedido para actualizar el estado del comedero: ", info.id);
-
   const { Feeders } = databaseClient.models;
 
   baseFeeder.FeederReportId = info.id;
@@ -133,21 +118,14 @@ const createFeeder = async (
 
   baseFeeder.qrId = generatedQrId;
 
-  const response = await Feeders.create(baseFeeder, {
-    include: [
-      {
-        model: FeederReport,
-        required: true,
-      },
-    ],
-  });
+  const response = await Feeders.create(baseFeeder, {});
 
   return response;
 };
 
 const updateFeederReport = async (
   info: FeedersReport
-): Promise<FeedersWithReport> => {
+): Promise<FeedersReport> => {
   // Update informacion del Report
 
   //Logging
@@ -275,28 +253,9 @@ const generateQR = async (id: string): Promise<string> => {
       ? `https://porelloscomederos.com/#/update/${id}`
       : `http://localhost:8000/update/${id}`;
 
-  const generatedQR = await QRCode.toString(qrURL);
-
-  console.log("GENERATED QR: ", generatedQR);
+  const generatedQR = await QRCode.toDataURL(qrURL);
 
   return generatedQR;
-};
-
-const generatePDF = async (): Promise<any> => {
-  const response = await pdf.create(html).toFile(`./porellosqr.pdf`);
-
-  if (response) {
-    const datafile = await fs.readFileSync("./porellosqr.pdf");
-    return datafile;
-  }
-
-  // pdf.create(html).toFile(`./porellosqr.pdf`, function (err, stream) {
-  //   if(err) {
-  //     console.log("Hubo un error creando el PDF: ", err)
-  //   } else{
-
-  //   }
-  // });
 };
 
 export {
@@ -309,5 +268,4 @@ export {
   createFeeder,
   createFeederReport,
   generateQR,
-  generatePDF,
 };

@@ -153,7 +153,10 @@ async function createFeeder(req, res, next) {
     return;
   }
 
-  serviceResponse = await serviceController.createFeeder(next, bodyRequest);
+  serviceResponse = await serviceController.createFeeder(
+    next,
+    bodyRequest.email
+  );
 
   // Checking for Response
   serviceResponse && res.status(serviceResponse.status).send(serviceResponse);

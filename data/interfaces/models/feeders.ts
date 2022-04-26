@@ -27,12 +27,7 @@ export interface FeedersWithReport {
   FeederReport: FeedersReport;
 }
 
-export const baseFeeder: Feeders = {
-  location: "loc",
-  latitude: "lat",
-  longitude: "long",
+export const baseFeeder = {
   isOn: false,
-  description: "desc",
   FeederReportId: 1,
-  qrId: "1",
 };

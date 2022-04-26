@@ -9,9 +9,8 @@ import { UpdateEmailBody } from "../../data/interfaces/requests/updateEmail";
 // Old require not updated for ES6
 const fs = require("fs");
 const pdf = require("html-pdf");
-
-// Get the HTML Base File
-const html = fs.readFileSync("./base.html", "utf8");
+const cheerio = require("cheerio");
+const nodemailer = require("nodemailer");
 
 let feedersAdapter: AdapterInterface;
 
@@ -125,32 +124,99 @@ async function createFeeder(
     return;
   }
   try {
+    console.log("Pedido para generar PDF para el email: ", email);
+
     // Create the Feeder Report
     const feederReportResponse = await feedersAdapter.createFeederReport();
+    console.log("FeederReport creado");
 
     // Create the new Feeder
     const feederResponse = await feedersAdapter.createFeeder(
       feederReportResponse
     );
+    console.log("Feeder creado");
 
     // Generate the new feeder QR with it the ID
     const generatedQR = await feedersAdapter.generateQR(feederResponse.qrId);
+    console.log("QR creado");
+
+    // Edit HTML file
+    const html = fs.readFileSync(__dirname + "/base.html", "utf8");
+    const $ = await cheerio.load(html);
+    $(".image_container").each(function () {
+      var new_src = generatedQR;
+      $(this).attr("src", new_src);
+    });
+    console.log("HTML editado");
 
     // Create the PDF to send
-    const response = await pdf
-      .create(html)
-      .toFile(`./porellosqr.pdf`, function (err, stream) {
-        if (err) {
-          next({
-            err: Errors.INTERNAL_SERVICE_ERROR,
-            dataErr: err,
-          });
+    const pdfCreate = new Promise((res, rej) => {
+      pdf
+        .create($.html(), { format: "A3" })
+        .toFile(__dirname + `/porellosqr.pdf`, function (err, stream) {
+          if (err) {
+            rej(err);
+          } else {
+            res(stream);
+          }
+        });
+    });
+
+    await pdfCreate;
+    console.log("PDF creado");
+
+    // Send email with PDF
+    const user = process.env.EMAIL_USER;
+    const password = process.env.EMAIL_PASS;
+
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: user,
+        pass: password,
+      },
+    });
+
+    const mailOptions = {
+      from: "porelloscomederos@gmail.com",
+      to: email,
+      subject: "Te enviamos tu PDF de Por Ellos Comederos",
+      text: "Test",
+      attachments: [
+        {
+          filename: "porellosqr.pdf",
+          path: __dirname + `/porellosqr.pdf`,
+          contentType: "application/pdf",
+        },
+      ],
+    };
+
+    const emailSend = new Promise((res, rej) => {
+      transporter.sendMail(mailOptions, function (error, info) {
+        if (error) {
+          rej(error);
         } else {
-          console.log("PDF CREADO CON EXITO");
+          res(feederResponse);
         }
       });
+    });
 
-    // Return if no errors
+    await emailSend;
+    console.log("Email enviado");
+
+    const removePDFAfterSend = new Promise((res, rej) => {
+      fs.unlink(__dirname + `/porellosqr.pdf`, function (err) {
+        if (err) {
+          rej(err);
+        } else {
+          res(true);
+        }
+      });
+    });
+
+    await removePDFAfterSend;
+    console.log("PDF borrado");
+
     return {
       data: feederResponse,
       status: 200,

@@ -18,5 +18,4 @@ export default interface AdapterInterface {
   createFeeder: (info: FeedersReport) => Promise<FeedersWithReport>;
   createFeederReport: () => Promise<FeedersReport>;
   generateQR: (id: string) => Promise<string>;
-  generatePDF: () => Promise<any>;
 }

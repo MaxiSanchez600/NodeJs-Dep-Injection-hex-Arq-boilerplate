@@ -8,18 +8,18 @@ export default (sequelize) => {
     },
     location: {
       type: DataTypes.STRING,
-      allowNull: false,
-      unique: true,
+      allowNull: true,
+      unique: false,
     },
     latitude: {
       type: DataTypes.STRING,
-      allowNull: false,
-      unique: true,
+      allowNull: true,
+      unique: false,
     },
     longitude: {
       type: DataTypes.STRING,
-      allowNull: false,
-      unique: true,
+      allowNull: true,
+      unique: false,
     },
     isOn: {
       type: DataTypes.BOOLEAN,
@@ -27,13 +27,13 @@ export default (sequelize) => {
     },
     description: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
   });
   sequelize.define("FeederReport", {
     description: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     status: {
       type: DataTypes.ENUM,
@@ -49,7 +49,7 @@ export default (sequelize) => {
     },
     img: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
       unique: true,
     },
   });

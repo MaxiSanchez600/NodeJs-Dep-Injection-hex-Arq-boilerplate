@@ -7,7 +7,10 @@ type middlewareErr = {
 };
 
 export function errorHandler(err: middlewareErr, req, res, next) {
-  console.log("HAY UN ERR: ", err.dataErr);
+  console.log(
+    "Hay un error en el el ultimo endpoint que se llamo: ",
+    err.dataErr
+  );
   let response: serviceCommonResponse;
   switch (err.err) {
     case Errors.INTERNAL_SERVICE_ERROR:
