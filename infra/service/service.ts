@@ -147,6 +147,10 @@ async function createFeeder(
       var new_src = generatedQR;
       $(this).attr("src", new_src);
     });
+    $(".image_bigContainer").each(function () {
+      var new_src = "https://i.ibb.co/2h5QyZb/info.png";
+      $(this).attr("src", new_src);
+    });
     console.log("HTML editado");
 
     // Create the PDF to send
