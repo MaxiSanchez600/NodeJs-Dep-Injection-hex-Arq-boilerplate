@@ -75,6 +75,7 @@ async function updateFeederInformation(
   try {
     const feedersResponse = await feedersAdapter.updateFeederInformation(body);
     await feedersAdapter.updateFeederReport(body.FeederReport);
+    console.log("FeederReport actualizado para Feeder");
     return {
       data: feedersResponse,
       status: 200,
