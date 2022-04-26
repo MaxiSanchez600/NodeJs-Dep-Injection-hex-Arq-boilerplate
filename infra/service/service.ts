@@ -180,8 +180,8 @@ async function createFeeder(
     const mailOptions = {
       from: "porelloscomederos@gmail.com",
       to: email,
-      subject: "Te enviamos tu PDF de Por Ellos Comederos",
-      text: "Test",
+      subject: "Te enviamos tu QR de Por Ellos Comederos",
+      text: "Hola! Muchas gracias por poner un comedero de Por Ellos. En este PDF, te enviamos las instrucciones que van pegadas en el comedero junto con su QR para integrarlo a la plataforma. Recorda seguir las instrucciones de la web y el video, y si tenes alguna duda, no dudes en contactarte con nosotros a traves de este email o WhatsApp.",
       attachments: [
         {
           filename: "porellosqr.pdf",
