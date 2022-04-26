@@ -140,15 +140,25 @@ async function createFeeder(
     const generatedQR = await feedersAdapter.generateQR(feederResponse.qrId);
     console.log("QR creado");
 
+    const infoImage = new Promise((res, rej) => {
+      fs.readFile(__dirname + "/PNG_Explicacion.png", function (err, data) {
+        if (err) {
+          rej(err);
+        } else {
+          res(data);
+        }
+      });
+    });
+
+    // Read Info image
+    const infoImageRead = await infoImage;
+    console.log("Imagen leida");
+
     // Edit HTML file
     const html = fs.readFileSync(__dirname + "/base.html", "utf8");
     const $ = await cheerio.load(html);
     $(".image_container").each(function () {
       var new_src = generatedQR;
-      $(this).attr("src", new_src);
-    });
-    $(".image_bigContainer").each(function () {
-      var new_src = "https://i.ibb.co/2h5QyZb/info.png";
       $(this).attr("src", new_src);
     });
     console.log("HTML editado");
